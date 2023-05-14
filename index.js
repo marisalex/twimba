@@ -13,10 +13,9 @@ document.addEventListener("click", function (e) {
     handleReplyClicks(e.target.dataset.comments)
   } else if (e.target.id === "tweet-btn") {
     handleTweetClickBtn()
+  }else if (e.target.dataset.replytweetbtn) {
+    handleReplyTweetBtn(e.target.dataset.replytweetbtn)
   }
-  // else if (e.target.id === "reply-tweet-btn") {
-  //   handleReplyTweetBtn()
-  // }
 
 
 })
@@ -78,27 +77,38 @@ function handleTweetClickBtn() {
   tweetInput.value = ""
 }
 
-// function handleReplyTweetBtn() {
-//   const replyInput = document.getElementById("reply-input")
-//   // const tweetReply = tweetsData.filter(function (tweet) {
-//   //   return tweet.uuid
-//   // })[0]
+function handleReplyTweetBtn(tweetId) {
+  const replyInput = document.getElementById(`reply-input-${tweetId}`)
+  
 
-//   // console.log(tweetReply, "tweetreply")
+  const replyTweetObj = tweetsData.filter(function(tweet){
+    return tweet.uuid === tweetId
+  })[0]
+  
+  replyTweetObj.replies.push({
+    handle: `@Marisalex`,
+    profilePic: `images/alex.jpg`,
+    tweetText: `${replyInput.value}`
+  })
 
-//   // var currentTweet = tweetsData.indexOf
+  render()
+  // const tweets = document.getElementsByClassName("reply-tweet-btn")
 
 
-//   tweetsData.forEach(function(tweet){
+  // for (let i = 0; i < tweets.length; i++){
+  //   const current = tweets[i]
+  //   current.addEventListener('click', (e)=> {
+  //       const id = e.target.parentElement.id.slice(8)
+  //       console.log(id)
+  //       const foundTweet = tweetsData.find((tweet)=> tweet.uuid === id)
 
-//       tweet.replies.push({
-//            handle: `marisalex`,
-//            profilePic: `images/alex.jpg`,
-//           tweetText: replyInput.value,
-//       })
-//        console.log(tweet.replies)
-//   })
-// }
+  //       foundTweet.replies.push({
+
+  //       })
+  //   })
+  // }
+
+}
 
 
 
@@ -124,7 +134,7 @@ function getFeed() {
     tweet.replies.forEach(function (reply) {
       tweetReplies += `<div class="tweet-reply">
         <div class="tweet-inner">
-            <img src="${reply.profilePic}" class="profile-pic">
+            <img src="${reply.profilePic}" class="profile-pic" />
                 <div>
                     <p class="handle">${reply.handle}</p>
                     <p class="tweet-text">${reply.tweetText}</p>
@@ -132,6 +142,11 @@ function getFeed() {
             </div>
     </div>`
     })
+
+    tweetReplies += ` 
+    <textarea placeholder="type your reply" id="reply-input-${tweet.uuid}" class="reply-input"></textarea>
+    <button data-replytweetbtn = "${tweet.uuid}" class="reply-tweet-btn" id="reply-tweet-btn ">Reply</button>
+    `
 
 
 
@@ -158,8 +173,6 @@ function getFeed() {
         </div>            
     </div>
     <div class="hidden" id="replies-${tweet.uuid}">
-    <textarea placeholder="type your reply" id="reply-input" class="reply-input"></textarea>
-    <button class="reply-tweet-btn" id="reply-tweet-btn">Tweet</button>
         ${tweetReplies}
     </div> 
 </div>`
